@@ -16,7 +16,11 @@ back to the defaults.
 """
 
 from django.conf import settings
-from django.utils import importlib, six
+from django.utils import six
+try:
+    from django.utils.importlib import import_module
+except ImportError:
+    from django.utils.module_loading import import_module
 
 
 USER_SETTINGS = getattr(settings, 'DJANGO_MONEY_RATES', None)
@@ -59,7 +63,7 @@ def import_from_string(val, setting_name):
     try:
         parts = val.split('.')
         module_path, class_name = '.'.join(parts[:-1]), parts[-1]
-        module = importlib.import_module(module_path)
+        module = import_module(module_path)
         return getattr(module, class_name)
     except ImportError as e:
         msg = "Could not import '%s' for setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
